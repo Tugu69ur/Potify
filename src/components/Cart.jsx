@@ -37,8 +37,8 @@ export default function Cart({
   );
 
   function updateQuantity(item, nextQuantity) {
-    if (nextQuantity < 1) return onRemoveFromCart(item.id);
-    onUpdateQuantity(item.id, nextQuantity);
+    if (nextQuantity < 1) return onRemoveFromCart(item.cartItemId);
+    onUpdateQuantity(item.cartItemId, nextQuantity);
   }
 
   async function handleCheckout() {
@@ -112,7 +112,7 @@ export default function Cart({
           <>
             <div className="cart-items">
               {cart.map((item) => (
-                <article className="cart-item" key={item.id}>
+                <article className="cart-item" key={item.cartItemId || item.id}>
                   <div className="cart-item-image">
                     {item.image ? (
                       <img src={item.image} alt={item.name} />
@@ -124,11 +124,11 @@ export default function Cart({
                     <div className="cart-item-topline">
                       <div>
                         <h3>{item.name}</h3>
-                        <p>{item.category || "Custom order"}</p>
+                        <p>{item.category || "Custom order"} · {item.color} / {item.size}</p>
                       </div>
                       <button
                         className="cart-remove"
-                        onClick={() => onRemoveFromCart(item.id)}
+                        onClick={() => onRemoveFromCart(item.cartItemId)}
                         aria-label={`Remove ${item.name}`}
                       >
                         <DeleteOutlined />

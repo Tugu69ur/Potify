@@ -1,0 +1,636 @@
+/* =========================================================
+   HOME PAGE
+========================================================= */
+
+.home-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading {
+  min-height: 400px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #999;
+}
+
+/* =========================================================
+   FASHION EDITORIAL HERO
+========================================================= */
+
+.fashion-hero {
+  width: 100%;
+  max-width: 1500px;
+  min-height: 650px;
+
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: 52% 48%;
+
+  background: #f6f6f3;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   HERO IMAGE
+========================================================= */
+
+.fashion-hero-image {
+  position: relative;
+
+  min-height: 650px;
+
+  overflow: hidden;
+
+  background: #eeeeeb;
+}
+
+/*
+   All three images occupy the same space.
+   Only the active image is visible.
+*/
+
+.fashion-image {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  opacity: 0;
+
+  transform: scale(1.04);
+
+  transition:
+    opacity 1.2s ease,
+    transform 6s ease;
+}
+
+.fashion-image.active {
+  opacity: 1;
+
+  transform: scale(1);
+}
+
+/* =========================================================
+   HERO CONTENT
+========================================================= */
+
+.fashion-hero-content {
+  min-height: 650px;
+
+  padding: 55px 60px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  color: #111;
+}
+
+/* =========================================================
+   HERO TOP
+========================================================= */
+
+.fashion-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #d8d8d5;
+}
+
+.fashion-label,
+.fashion-number {
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+.fashion-number {
+  color: #888;
+}
+
+/* =========================================================
+   HERO CENTER
+========================================================= */
+
+.fashion-hero-middle {
+  max-width: 430px;
+}
+
+.fashion-season {
+  display: block;
+
+  margin-bottom: 25px;
+
+  font-size: 11px;
+
+  font-weight: 500;
+
+  letter-spacing: 3px;
+
+  color: #777;
+
+  animation: heroFade 0.8s ease;
+}
+
+.fashion-hero-middle h2 {
+  margin: 0 0 28px;
+
+  font-size: clamp(48px, 5vw, 78px);
+
+  font-weight: 400;
+
+  line-height: 0.9;
+
+  letter-spacing: -3px;
+
+  color: #111;
+
+  animation: heroTextIn 0.8s ease;
+}
+
+.fashion-hero-middle p {
+  max-width: 340px;
+
+  margin: 0 0 35px;
+
+  font-size: 13px;
+
+  line-height: 1.8;
+
+  color: #666;
+
+  animation: heroFade 1s ease;
+}
+
+/* =========================================================
+   EXPLORE BUTTON
+========================================================= */
+
+.fashion-explore {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 28px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
+
+  color: #111;
+
+  cursor: pointer;
+
+  animation: heroFade 1.1s ease;
+}
+
+.fashion-explore span {
+  font-size: 20px;
+
+  transition: transform 0.3s ease;
+}
+
+.fashion-explore:hover span {
+  transform: translateX(7px);
+}
+
+/* =========================================================
+   HERO PROGRESS
+========================================================= */
+
+.fashion-progress {
+  width: 100%;
+}
+
+.fashion-progress-track {
+  width: 100%;
+
+  height: 1px;
+
+  overflow: hidden;
+
+  background: #d2d2cf;
+}
+
+.fashion-progress-bar {
+  width: 0;
+
+  height: 1px;
+
+  background: #111;
+
+  animation: fashionProgress 5s linear forwards;
+}
+
+@keyframes fashionProgress {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   HERO ANIMATIONS
+========================================================= */
+
+@keyframes heroFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroTextIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   COLLECTION
+========================================================= */
+
+.collection-section {
+  width: 100%;
+  max-width: 1500px;
+
+  margin: 0 auto;
+}
+
+/* =========================================================
+   COLLECTION HEADER
+========================================================= */
+
+.page-header {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  margin: 0;
+
+  font-size: 32px;
+
+  font-weight: 500;
+
+  letter-spacing: 4px;
+
+  line-height: 1;
+}
+
+.page-header p {
+  margin: 14px 0 0;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+  color: #777;
+}
+
+.product-count {
+  flex-shrink: 0;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
+
+  color: #999;
+}
+
+/* =========================================================
+   PRODUCT GRID
+========================================================= */
+
+.products-grid {
+  width: 100%;
+
+  margin-bottom: 60px;
+}
+
+/* =========================================================
+   PRODUCT CARD
+========================================================= */
+
+.product-card-antd {
+  height: 100%;
+
+  border: 1px solid #eeeeec !important;
+
+  border-radius: 0 !important;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.product-card-antd:hover {
+  transform: translateY(-4px);
+
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
+
+.product-image-wrapper {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 3 / 4;
+
+  overflow: hidden;
+
+  background: #f5f5f3;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.product-card-antd:hover .product-image {
+  transform: scale(1.04);
+}
+
+/* =========================================================
+   PRODUCT INFO
+========================================================= */
+
+.product-info {
+  display: flex;
+
+  flex-direction: column;
+
+  height: 100%;
+}
+
+.product-category {
+  margin: 0 0 7px;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+
+  color: #999;
+}
+
+.product-name {
+  margin: 0;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.4;
+
+  color: #111;
+}
+
+/* =========================================================
+   PRODUCT BOTTOM
+========================================================= */
+
+.product-bottom {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-top: 18px;
+}
+
+.product-price {
+  margin: 0;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  color: #111;
+}
+
+/* =========================================================
+   ADD TO CART
+========================================================= */
+
+.product-bottom .ant-btn {
+  height: 36px;
+
+  padding: 0 13px;
+
+  border-radius: 0;
+
+  border-color: #111;
+
+  background: #111;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+}
+
+.product-bottom .ant-btn:hover {
+  border-color: #333 !important;
+
+  background: #333 !important;
+}
+
+/* =========================================================
+   EMPTY PRODUCTS
+========================================================= */
+
+.empty-products {
+  min-height: 300px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+  .fashion-hero {
+    grid-template-columns:
+      55%
+      45%;
+  }
+
+  .fashion-hero-content {
+    padding: 45px 40px;
+  }
+
+  .fashion-hero-middle h2 {
+    font-size: 58px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 800px) {
+  .home-page {
+    gap: 60px;
+  }
+
+  .fashion-hero {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+  }
+
+  .fashion-hero-image {
+    min-height: 0;
+
+    aspect-ratio: 3 / 4;
+  }
+
+  .fashion-hero-content {
+    min-height: 450px;
+
+    padding: 35px 30px;
+  }
+
+  .fashion-hero-middle h2 {
+    font-size: 54px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+  .fashion-hero-image {
+    aspect-ratio: 3 / 4;
+  }
+
+  .fashion-hero-content {
+    min-height: 420px;
+
+    padding: 28px 22px;
+  }
+
+  .fashion-hero-middle h2 {
+    font-size: 44px;
+
+    letter-spacing: -2px;
+  }
+
+  .fashion-hero-middle p {
+    max-width: 290px;
+
+    font-size: 12px;
+  }
+
+  .fashion-label,
+  .fashion-number {
+    font-size: 9px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    margin-bottom: 30px;
+  }
+
+  .page-header h1 {
+    font-size: 27px;
+  }
+
+  .product-bottom {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .product-bottom .ant-btn {
+    width: 100%;
+  }
+}

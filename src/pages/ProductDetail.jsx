@@ -12,9 +12,13 @@ export default function ProductDetail({
   products,
   loading,
   onAddToCart,
+  wishlist = [],
+  onToggleWishlist,
 }) {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedColor, setSelectedColor] = useState("");
 
   // React Router params are strings, while Supabase IDs
   // can sometimes be numbers.
@@ -73,7 +77,14 @@ export default function ProductDetail({
   }
 
   function addToCart() {
-    onAddToCart(product, quantity);
+    onAddToCart(
+      {
+        ...product,
+        size: selectedSize,
+        color: selectedColor || product.colors?.[0] || "Black",
+      },
+      quantity,
+    );
 
     message.success(
       `${quantity} × ${product.name} added to cart.`,
@@ -116,6 +127,14 @@ export default function ProductDetail({
             {formatMnt(product.price)}
           </p>
 
+          <button
+            className={`product-detail-save ${wishlist.includes(product.id) ? "is-saved" : ""}`}
+            type="button"
+            onClick={() => onToggleWishlist(product.id)}
+          >
+            {wishlist.includes(product.id) ? "SAVED TO YOUR EDIT" : "SAVE TO YOUR EDIT"} <span>♡</span>
+          </button>
+
           <div className="product-detail-rule" />
 
           {/* Description */}
@@ -142,6 +161,41 @@ export default function ProductDetail({
               <strong>{product.category}</strong>
             </div>
           </div>
+
+          <div className="product-size-picker">
+            <div className="product-size-heading">
+              <span>SELECT SIZE</span>
+              <button type="button">SIZE GUIDE</button>
+            </div>
+            <div className="product-size-options" aria-label="Select size">
+              {(product.sizes?.length ? product.sizes : ["XS", "S", "M", "L", "XL"]).map((size) => (
+                <button
+                  className={selectedSize === size ? "selected" : ""}
+                  key={size}
+                  type="button"
+                  onClick={() => setSelectedSize(size)}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* <div className="product-color-picker">
+            <span>SELECT COLOR</span>
+            <div className="product-color-options">
+              {(product.colors?.length ? product.colors : ["Black"]).map((color) => (
+                <button
+                  className={(selectedColor || product.colors?.[0] || "Black") === color ? "selected" : ""}
+                  key={color}
+                  type="button"
+                  onClick={() => setSelectedColor(color)}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
+          </div> */}
 
           {/* Quantity + Add to cart */}
           <div className="product-detail-actions">
@@ -183,8 +237,12 @@ export default function ProductDetail({
           </div>
 
           <p className="product-detail-note">
-            Delivery cost is confirmed after you place the order.
+            Free Ulaanbaatar delivery on orders over 150,000 MNT.
           </p>
+          <div className="product-assurances">
+            <div><span>DELIVERY</span><p>Dispatched after our studio confirms your order.</p></div>
+            <div><span>RETURNS</span><p>Contact us within 7 days for a size exchange.</p></div>
+          </div>
         </section>
       </div>
 

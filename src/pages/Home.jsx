@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Empty, Spin, Card, Row, Col, message } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { HeartFilled, HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { formatMnt } from "../lib/money";
 
-import fashion1 from "../assets/fashion1.jpg";
-import fashion2 from "../assets/fashion2.jpg";
-import fashion3 from "../assets/fashion3.jpg";
+import fashion3 from "../assets/fashion1.jpg";
+import fashion1 from "../assets/fashion2.jpg";
+import fashion2 from "../assets/fashion3.jpg";
 
 const fashionSlides = [
   {
@@ -60,8 +60,11 @@ export default function Home({
     genders: [],
   },
   searchQuery = "",
+  wishlist = [],
+  onToggleWishlist,
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [sort, setSort] = useState("featured");
 
   /*
    * Fashion hero automatically changes every 5 seconds
@@ -103,6 +106,10 @@ export default function Home({
       matchesMasterCategory &&
       matchesGender
     );
+  }).sort((first, second) => {
+    if (sort === "price-low") return Number(first.price) - Number(second.price);
+    if (sort === "price-high") return Number(second.price) - Number(first.price);
+    return 0;
   });
 
   /*
@@ -187,6 +194,16 @@ export default function Home({
         </div>
       </section>
 
+      <section className="luxury-manifesto">
+        <span>MINIMAL / OBJECTS FOR DAILY LIFE</span>
+        <p>We believe the pieces you reach for every day should feel <em>considered</em>, effortless, and quietly distinct.</p>
+        <div className="manifesto-points">
+          <span>01 / DELIBERATE FORM</span>
+          <span>02 / SMALL BATCHES</span>
+          <span>03 / LASTING WARDROBE</span>
+        </div>
+      </section>
+
       {/* =========================================
           COLLECTION
       ========================================= */}
@@ -194,9 +211,18 @@ export default function Home({
       <section className="collection-section">
         <div className="collection-header page-header">
           <div>
+            <span className="section-kicker">THE CURRENT EDIT</span>
             <h1>COLLECTION</h1>
-            <p>{filteredProducts.length} pieces</p>
+            <p>{filteredProducts.length} considered pieces available now.</p>
           </div>
+          <label className="collection-sort">
+            <span>SORT BY</span>
+            <select value={sort} onChange={(event) => setSort(event.target.value)}>
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: Low to high</option>
+              <option value="price-high">Price: High to low</option>
+            </select>
+          </label>
         </div>
 
         {filteredProducts.length > 0 ? (
@@ -226,6 +252,14 @@ export default function Home({
                     </Link>
                   }
                 >
+                  <button
+                    type="button"
+                    className={`product-wishlist ${wishlist.includes(product.id) ? "is-saved" : ""}`}
+                    onClick={() => onToggleWishlist(product.id)}
+                    aria-label={`Save ${product.name}`}
+                  >
+                    {wishlist.includes(product.id) ? <HeartFilled /> : <HeartOutlined />}
+                  </button>
                   <div className="collection-product-info">
                     <p className="collection-product-category product-category">
                       {product.category}
@@ -258,6 +292,12 @@ export default function Home({
             <Empty description="No products match your filters" />
           </div>
         )}
+      </section>
+
+      <section className="home-service-strip" aria-label="Store promises">
+        <div><span>01</span><strong>SMALL BATCH</strong><p>Considered pieces, produced with intention.</p></div>
+        <div><span>02</span><strong>LOCAL DELIVERY</strong><p>Fast delivery throughout Ulaanbaatar.</p></div>
+        <div><span>03</span><strong>PERSONAL SERVICE</strong><p>Questions? Our studio is here to help.</p></div>
       </section>
     </div>
   );

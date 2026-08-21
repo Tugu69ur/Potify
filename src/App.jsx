@@ -11,14 +11,17 @@ import { Input, ConfigProvider } from "antd";
 
 import Sidebar from "./components/Sidebar";
 import Cart from "./components/Cart";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import Custom from "./pages/Custom";
 import Contact from "./pages/Contact";
 import Printing from "./pages/Printing";
+import DeliveryReturns from "./pages/DeliveryReturns";
 import Login from "./pages/Login";
 import Account from "./pages/Account";
+import Wishlist from "./pages/Wishlist";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Orders from "./pages/admin/Orders";
@@ -27,6 +30,24 @@ import Messages from "./pages/admin/Messages";
 import { supabase } from "./lib/supabase";
 
 import "./App.css";
+import "./styles/home.css";
+import "./styles/storefront.css";
+
+const DEFAULT_SIZES = ["XS", "S", "M", "L", "XL"];
+const DEFAULT_COLORS = ["Black"];
+
+function normalizeCartItem(product, quantity) {
+  const size = product.size || product.sizes?.[0] || DEFAULT_SIZES[2];
+  const color = product.color || product.colors?.[0] || DEFAULT_COLORS[0];
+
+  return {
+    ...product,
+    size,
+    color,
+    quantity,
+    cartItemId: `${product.id}:${size}:${color}`,
+  };
+}
 
 function isAdminUser(user) {
   return user?.app_metadata?.role === "admin";
@@ -126,6 +147,13 @@ function StoreApp() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [cartVisible, setCartVisible] = useState(false);
+  const [wishlist, setWishlist] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("wishlist") || "[]");
+    } catch {
+      return [];
+    }
+  });
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -136,6 +164,10 @@ function StoreApp() {
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
 
   async function fetchProducts() {
     try {
@@ -159,6 +191,10 @@ function StoreApp() {
           price: row.price_mnt,
           image: row.image_url,
           description: row.description,
+          sku: row.sku,
+          sizes: row.sizes,
+          colors: row.colors,
+          stockQuantity: row.stock_quantity,
         })),
       );
     } catch (error) {
@@ -169,16 +205,19 @@ function StoreApp() {
   }
 
   function addToCart(product, quantity = 1) {
-    const existingItem = cart.find((item) => item.id === product.id);
+    const cartItem = normalizeCartItem(product, quantity);
+    const existingItem = cart.find(
+      (item) => item.cartItemId === cartItem.cartItemId,
+    );
 
     let newCart;
 
     if (existingItem) {
       newCart = cart.map((item) =>
-        item.id === product.id
+        item.cartItemId === cartItem.cartItemId
           ? {
               ...item,
-              quantity: item.quantity + quantity,
+          quantity: item.quantity + cartItem.quantity,
             }
           : item,
       );
@@ -186,8 +225,7 @@ function StoreApp() {
       newCart = [
         ...cart,
         {
-          ...product,
-          quantity,
+          ...cartItem,
         },
       ];
     }
@@ -195,15 +233,23 @@ function StoreApp() {
     setCart(newCart);
   }
 
-  function removeFromCart(productId) {
-    setCart(cart.filter((item) => item.id !== productId));
+  function removeFromCart(cartItemId) {
+    setCart(cart.filter((item) => item.cartItemId !== cartItemId));
   }
 
-  function updateCartQuantity(productId, quantity) {
+  function updateCartQuantity(cartItemId, quantity) {
     setCart((currentCart) =>
       currentCart.map((item) =>
-        item.id === productId ? { ...item, quantity } : item,
+        item.cartItemId === cartItemId ? { ...item, quantity } : item,
       ),
+    );
+  }
+
+  function toggleWishlist(productId) {
+    setWishlist((current) =>
+      current.includes(productId)
+        ? current.filter((id) => id !== productId)
+        : [...current, productId],
     );
   }
 
@@ -216,6 +262,8 @@ function StoreApp() {
       p_items: cart.map((item) => ({
         id: item.id,
         quantity: item.quantity,
+        size: item.size,
+        color: item.color,
       })),
     });
 
@@ -272,6 +320,7 @@ function StoreApp() {
                 STORE HEADER
             ================================================= */}
 
+        <div className="store-announcement">COMPLIMENTARY DELIVERY IN ULAANBAATAR ON ORDERS OVER 150,000 MNT</div>
         <header className="store-header">
           {/* LOGO */}
 
@@ -287,7 +336,7 @@ function StoreApp() {
             </Link>
 
             <Link to="/custom" className="store-nav-link">
-              CUSTOM
+              ATELIER
             </Link>
 
             <Link to="/contact" className="store-nav-link">
@@ -303,6 +352,9 @@ function StoreApp() {
                 LOGIN
               </Link>
             )}
+            <Link to="/wishlist" className="store-nav-link">
+              SAVED ({wishlist.length})
+            </Link>
           </nav>
 
           {/* SEARCH */}
@@ -346,6 +398,8 @@ function StoreApp() {
                     onAddToCart={addToCart}
                     filters={filters}
                     searchQuery={searchQuery}
+                    wishlist={wishlist}
+                    onToggleWishlist={toggleWishlist}
                   />
                 }
               />
@@ -356,6 +410,8 @@ function StoreApp() {
                     products={products}
                     loading={loading}
                     onAddToCart={addToCart}
+                    wishlist={wishlist}
+                    onToggleWishlist={toggleWishlist}
                   />
                 }
               />
@@ -368,7 +424,12 @@ function StoreApp() {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/printing" element={<Printing />} />
+              <Route path="/delivery-returns" element={<DeliveryReturns />} />
               <Route path="/account" element={<Account />} />
+              <Route
+                path="/wishlist"
+                element={<Wishlist products={products} wishlist={wishlist} onToggleWishlist={toggleWishlist} onAddToCart={addToCart} />}
+              />
               <Route
                 path="*"
                 element={
@@ -378,12 +439,15 @@ function StoreApp() {
                     onAddToCart={addToCart}
                     filters={filters}
                     searchQuery={searchQuery}
+                    wishlist={wishlist}
+                    onToggleWishlist={toggleWishlist}
                   />
                 }
               />
             </Routes>
           </main>
         </div>
+        {isShop && <Footer />}
       </div>
 
       {/* =================================================

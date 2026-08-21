@@ -133,27 +133,8 @@ export default function Sidebar({
   ];
 
   return (
-    <aside
-      className="sidebar-panel"
-      style={{
-        padding: "20px",
-        backgroundColor: "#fafafa",
-        borderRadius: "4px",
-        border: "1px solid #f0f0f0",
-      }}
-    >
-      <h2
-        style={{
-          fontSize: "16px",
-          fontWeight: 700,
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
-          margin: "0 0 20px",
-          color: "#000",
-        }}
-      >
-        Filters
-      </h2>
+    <aside className="sidebar-panel">
+      <div className="filter-heading"><span>REFINE</span><button type="button" onClick={() => onFiltersChange({ subCategories: [], masterCategories: [], genders: [] })}>CLEAR</button></div>
 
       <Collapse
         items={items}

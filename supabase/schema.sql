@@ -11,6 +11,10 @@ create table if not exists products (
   master_category text,
   gender text,
   price_mnt integer not null check (price_mnt >= 0),
+  sku text,
+  sizes text[] not null default array['XS', 'S', 'M', 'L', 'XL'],
+  colors text[] not null default array['Black'],
+  stock_quantity integer check (stock_quantity is null or stock_quantity >= 0),
   description text,
   image_url text,
   is_active boolean not null default true,
@@ -67,6 +71,13 @@ alter table orders
   add column if not exists paid_at timestamptz,
   add column if not exists delivery_fee_mnt integer not null default 0
     check (delivery_fee_mnt >= 0);
+
+alter table products
+  add column if not exists sku text,
+  add column if not exists sizes text[] not null default array['XS', 'S', 'M', 'L', 'XL'],
+  add column if not exists colors text[] not null default array['Black'],
+  add column if not exists stock_quantity integer
+    check (stock_quantity is null or stock_quantity >= 0);
 
 -- Public can browse products
 alter table products enable row level security;
@@ -169,6 +180,8 @@ declare
   v_item jsonb;
   v_product products%rowtype;
   v_quantity integer;
+  v_size text;
+  v_color text;
   v_total integer := 0;
 begin
   if auth.uid() is null then
@@ -206,6 +219,22 @@ begin
       raise exception 'A product in your cart is unavailable.';
     end if;
 
+    v_size := coalesce(nullif(trim(v_item ->> 'size'), ''), v_product.sizes[1]);
+    v_color := coalesce(nullif(trim(v_item ->> 'color'), ''), v_product.colors[1]);
+
+    if v_size is null or not (v_size = any(v_product.sizes)) then
+      raise exception 'The selected size is unavailable.';
+    end if;
+
+    if v_color is null or not (v_color = any(v_product.colors)) then
+      raise exception 'The selected color is unavailable.';
+    end if;
+
+    if v_product.stock_quantity is not null
+      and v_quantity > v_product.stock_quantity then
+      raise exception 'Insufficient stock for %.', v_product.name;
+    end if;
+
     v_total := v_total + (v_product.price_mnt * v_quantity);
   end loop;
 
@@ -224,11 +253,15 @@ begin
     where id = (v_item ->> 'id')::uuid
       and is_active = true;
 
+    v_size := coalesce(nullif(trim(v_item ->> 'size'), ''), v_product.sizes[1]);
+    v_color := coalesce(nullif(trim(v_item ->> 'color'), ''), v_product.colors[1]);
+
     insert into order_items (
-      order_id, kind, product_id, title, quantity, unit_price_mnt
+      order_id, kind, product_id, title, quantity, unit_price_mnt, print_config
     ) values (
       v_order_id, 'ready_made', v_product.id, v_product.name,
-      (v_item ->> 'quantity')::integer, v_product.price_mnt
+      (v_item ->> 'quantity')::integer, v_product.price_mnt,
+      jsonb_build_object('size', v_size, 'color', v_color, 'sku', v_product.sku)
     );
   end loop;
 
